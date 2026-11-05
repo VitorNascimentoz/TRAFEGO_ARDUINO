@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <title>Semaforo 3 Vias</title>
+  <style>
+    body {
+      background: #1b1b1b;
+      color: #f0f0f0;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem;
+    }
+    h1 { margin-bottom: 2rem; }
+    .cruzamento {
+      display: flex;
+      gap: 3rem;
+    }
+    .via {
+      text-align: center;
+    }
+    .via h2 {
+      margin-bottom: 0.5rem;
+      font-size: 1rem;
+    }
+    .poste {
+      background: #2a2a2a;
+      border-radius: 12px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .luz {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: #3a3a3a;
+      opacity: 0.25;
+      transition: opacity 0.2s ease;
+    }
+    .luz.vermelho.ativo { background: #e53935; opacity: 1; box-shadow: 0 0 20px #e53935; }
+    .luz.amarelo.ativo  { background: #fdd835; opacity: 1; box-shadow: 0 0 20px #fdd835; }
+    .luz.verde.ativo    { background: #43a047; opacity: 1; box-shadow: 0 0 20px #43a047; }
+  </style>
+</head>
+<body>
+  <h1>Visualizacao do Trafego - 3 Vias</h1>
+  <div class="cruzamento">
+    <div class="via">
+      <h2>Via 1</h2>
+      <div class="poste" id="poste-V1">
+        <div class="luz vermelho"></div>
+        <div class="luz amarelo"></div>
+        <div class="luz verde"></div>
+      </div>
+    </div>
+    <div class="via">
+      <h2>Via 2</h2>
+      <div class="poste" id="poste-V2">
+        <div class="luz vermelho"></div>
+        <div class="luz amarelo"></div>
+        <div class="luz verde"></div>
+      </div>
+    </div>
+    <div class="via">
+      <h2>Via 3</h2>
+      <div class="poste" id="poste-V3">
+        <div class="luz vermelho"></div>
+        <div class="luz amarelo"></div>
+        <div class="luz verde"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const cores = { VERDE: "verde", AMARELO: "amarelo", VERMELHO: "vermelho" };
+
+    async function atualizar() {
+      try {
+        const resp = await fetch("/status");
+        const dados = await resp.json();
+        for (const via of ["V1", "V2", "V3"]) {
+          const poste = document.getElementById("poste-" + via);
+          const corAtiva = cores[dados[via]];
+          poste.querySelectorAll(".luz").forEach((luz) => {
+            luz.classList.toggle("ativo", luz.classList.contains(corAtiva));
+          });
+        }
+      } catch (e) {
+        console.error("Falha ao buscar status", e);
+      }
+    }
+
+    setInterval(atualizar, 500);
+    atualizar();
+  </script>
+</body>
+</html>
